@@ -1,65 +1,76 @@
-// admin/js/admin-script.js
-jQuery(function($){
-  function ajax(action, data){
+jQuery(function ($) {
+  function post(action, data) {
     return $.post(conflictDetectiveData.ajax_url, $.extend({
       action: action,
       nonce: conflictDetectiveData.nonce
     }, data || {}));
   }
-  function showOutput(html){
-    var $out = $('#cd-scan-output');
-    $out.html(html).show();
+  function renderResults(payload) {
+    var box = $('#cd-scan-results');
+    box.empty();
+    box.show();
+    var html = '';
+    html += '<p><strong>' + conflictDetectiveData.strings.done + '</strong></p>';
+    if (payload && payload.conflicts_found !== undefined) {
+      html += '<p>Conflicts found: ' + payload.conflicts_found + '</p>';
+    }
+    html += '<p>Refresh the Dashboard tab to see stored conflicts.</p>';
+    box.html(html);
   }
-  function startScan(){
-    showOutput('<p>' + conflictDetectiveData.strings.starting + '</p>');
-    ajax('conflict_detective_start_scan', {}).done(function(res){
-      if(!res || !res.success){
-        showOutput('<p>' + conflictDetectiveData.strings.error + '</p>');
+  function pollProgress() {
+    post('conflict_detective_get_progress').done(function (res) {
+      if (!res || !res.success) return;
+      var p = res.data.progress;
+      if (!p) return;
+      if (p.status === 'running') {
+        setTimeout(pollProgress, 1500);
+      }
+    });
+  }
+  $('#cd-start-scan').on('click', function (e) {
+    e.preventDefault();
+    var btn = $(this);
+    btn.prop('disabled', true).text(conflictDetectiveData.strings.start);
+    post('conflict_detective_start_scan').done(function (res) {
+      if (!res || !res.success) {
+        alert(conflictDetectiveData.strings.error);
+        btn.prop('disabled', false).text('Start automated detection');
         return;
       }
-      showOutput('<pre style="white-space:pre-wrap;margin:0;">' + escapeHtml(JSON.stringify(res.data.results, null, 2)) + '</pre>');
-    }).fail(function(){
-      showOutput('<p>' + conflictDetectiveData.strings.error + '</p>');
+      renderResults({ conflicts_found: res.data.conflicts_found });
+      pollProgress();
+      btn.prop('disabled', false).text('Start automated detection');
+    }).fail(function () {
+      alert(conflictDetectiveData.strings.error);
+      btn.prop('disabled', false).text('Start automated detection');
     });
-  }
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g,function(m){
-      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[m];
-    });
-  }
-  $('#cd-start-scan, #cd-start-scan-hero').on('click', function(e){
-    e.preventDefault();
-    startScan();
   });
-  $(document).on('click', '.cd-resolve', function(e){
+  $('#cd-cancel-scan').on('click', function (e) {
+    e.preventDefault();
+    post('conflict_detective_cancel_scan').always(function () {
+      location.reload();
+    });
+  });
+  $(document).on('click', '.cd-resolve', function (e) {
     e.preventDefault();
     var id = $(this).data('conflict-id');
-    if(!id){ return; }
-    if(!window.confirm(conflictDetectiveData.strings.confirm_resolve)){ return; }
-    ajax('conflict_detective_resolve_conflict', { conflict_id: id }).done(function(){
-      window.location.reload();
+    post('conflict_detective_resolve_conflict', { conflict_id: id }).always(function () {
+      location.reload();
     });
   });
-  $('#cd-toggle-safe-mode').on('click', function(e){
+  $(document).on('click', '.cd-restore-snapshot', function (e) {
     e.preventDefault();
-    var safe = $(this).data('safe') === 1 || $(this).data('safe') === '1';
-    if(!safe){
-      if(!window.confirm(conflictDetectiveData.strings.confirm_safe_mode)){ return; }
-    }
-    ajax('conflict_detective_toggle_safe_mode', { enable: safe ? 0 : 1 }).done(function(){
-      window.location.reload();
+    var id = $(this).data('snapshot-id');
+    post('conflict_detective_restore_snapshot', { snapshot_id: id }).always(function () {
+      location.reload();
     });
   });
-  $('#cd-export-latest-json').on('click', function(e){
+  $('#cd-create-snapshot').on('click', function (e) {
     e.preventDefault();
-    ajax('conflict_detective_export_latest', { format: 'json' }).done(function(res){
-      if(res && res.success && res.data && res.data.url){ window.location.href = res.data.url; }
-    });
-  });
-  $('#cd-export-latest-csv').on('click', function(e){
-    e.preventDefault();
-    ajax('conflict_detective_export_latest', { format: 'csv' }).done(function(res){
-      if(res && res.success && res.data && res.data.url){ window.location.href = res.data.url; }
+    var label = prompt('Snapshot label', 'Manual snapshot');
+    if (label === null) return;
+    post('conflict_detective_create_snapshot', { label: label }).always(function () {
+      location.reload();
     });
   });
 });
