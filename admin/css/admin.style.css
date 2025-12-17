@@ -1,26 +1,80 @@
-/* admin/css/admin-style.css */
-.conflict-detective-admin .cd-muted{color:#646970}
-.conflict-detective-admin .cd-panel{background:#fff;border:1px solid #dcdcde;padding:16px;border-radius:10px}
-.conflict-detective-admin .cd-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}
-.conflict-detective-admin .cd-card{border:1px solid #dcdcde;border-radius:10px;padding:12px;background:#fafafa}
-.conflict-detective-admin .cd-card-title{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#50575e}
-.conflict-detective-admin .cd-card-number{font-size:28px;font-weight:700;margin-top:6px}
-.conflict-detective-admin .cd-good{border-color:#00a32a}
-.conflict-detective-admin .cd-warn{border-color:#dba617}
-.conflict-detective-admin .cd-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.conflict-detective-admin .cd-empty{padding:14px;border:1px dashed #c3c4c7;border-radius:10px;background:#fcfcfd}
-.conflict-detective-admin .cd-conflict{border:1px solid #dcdcde;border-radius:10px;margin:12px 0;background:#fff}
-.conflict-detective-admin .cd-conflict-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #f0f0f1}
-.conflict-detective-admin .cd-conflict-body{padding:10px 12px}
-.conflict-detective-admin .cd-pill{display:inline-block;border:1px solid #dcdcde;border-radius:999px;padding:2px 8px;font-size:12px;background:#f6f7f7}
-.conflict-detective-admin .cd-badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;color:#1d2327;background:#f6f7f7;border:1px solid #dcdcde}
-.conflict-detective-admin .cd-badge-critical{border-color:#d63638;background:#fbeaea}
-.conflict-detective-admin .cd-badge-warning{border-color:#dba617;background:#fff8e5}
-.conflict-detective-admin .cd-badge-notice{border-color:#2271b1;background:#eef6ff}
-.conflict-detective-admin .cd-progress-bar{height:10px;background:#f0f0f1;border-radius:999px;overflow:hidden;border:1px solid #dcdcde}
-.conflict-detective-admin .cd-progress-fill{height:100%;background:#2271b1;width:0%}
-.conflict-detective-admin .cd-scan-box{margin-top:10px}
-.conflict-detective-admin .cd-scan-output{margin-top:12px;padding:12px;border:1px solid #dcdcde;border-radius:10px;background:#fcfcfd}
-@media (max-width:1100px){.conflict-detective-admin .cd-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:560px){.conflict-detective-admin .cd-grid{grid-template-columns:1fr}}
-
+.conflict-detective-admin .cd-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:16px;
+}
+.conflict-detective-admin .cd-card{
+  background:#fff;
+  border:1px solid #dcdcde;
+  border-radius:8px;
+  padding:16px;
+}
+.conflict-detective-admin .cd-muted{
+  color:#646970;
+}
+.conflict-detective-admin .cd-conflict{
+  border-top:1px solid #f0f0f1;
+  padding-top:12px;
+  margin-top:12px;
+}
+.conflict-detective-admin .cd-conflict-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+}
+.conflict-detective-admin .cd-badge{
+  display:inline-block;
+  padding:2px 8px;
+  border-radius:999px;
+  background:#f0f0f1;
+  font-size:12px;
+}
+.conflict-detective-admin .cd-progress{
+  height:10px;
+  background:#f0f0f1;
+  border-radius:999px;
+  overflow:hidden;
+  margin:12px 0;
+}
+.conflict-detective-admin .cd-progress-bar{
+  height:10px;
+  background:#2271b1;
+}
+.conflict-detective-admin .cd-sev{
+  display:inline-block;
+  padding:2px 8px;
+  border-radius:6px;
+  font-size:12px;
+  background:#f0f0f1;
+}
+.conflict-detective-admin .cd-sev-critical{ background:#d63638; color:#fff; }
+.conflict-detective-admin .cd-sev-warning{ background:#dba617; color:#1d2327; }
+.conflict-detective-admin .cd-sev-notice{ background:#72aee6; color:#1d2327; }
+.conflict-detective-admin .cd-filters{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin:12px 0;
+}
+.conflict-detective-admin .cd-msg{
+  max-width:520px;
+}
+.conflict-detective-admin .cd-page{
+  display:inline-block;
+  padding:4px 8px;
+  margin-right:6px;
+  border:1px solid #dcdcde;
+  border-radius:6px;
+  text-decoration:none;
+}
+.conflict-detective-admin .cd-page-active{
+  background:#2271b1;
+  color:#fff;
+  border-color:#2271b1;
+}
+@media (max-width: 980px){
+  .conflict-detective-admin .cd-grid{ grid-template-columns:1fr; }
+}
