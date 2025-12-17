@@ -1,14 +1,13 @@
+```php
 <?php
 /**
  * Uninstall routine for Conflict Detective.
  *
  * @package ConflictDetective
- * @licence GPL v3
+ * @license GPL-3.0-or-later
  */
 
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-    exit;
-}
+defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 global $wpdb;
 
@@ -21,27 +20,36 @@ $tables = array(
 );
 
 foreach ( $tables as $table ) {
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-    $wpdb->query( "DROP TABLE IF EXISTS {$table}" );
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $wpdb->query( "DROP TABLE IF EXISTS `{$table}`" );
 }
 
-delete_option( 'conflict_detective_db_version' );
-delete_option( 'conflict_detective_error_threshold' );
-delete_option( 'conflict_detective_auto_safe_mode' );
-delete_option( 'conflict_detective_test_timeout' );
-delete_option( 'conflict_detective_retention_days' );
-delete_option( 'conflict_detective_essential_plugins' );
+$options = array(
+    'conflict_detective_db_version',
+    'conflict_detective_monitoring_enabled',
+    'conflict_detective_error_threshold',
+    'conflict_detective_test_timeout',
+    'conflict_detective_auto_detect',
+    'conflict_detective_auto_safe_mode',
+    'conflict_detective_notification_email',
+    'conflict_detective_essential_plugins',
+    'conflict_detective_retention_days',
+);
 
-$state_file = WP_CONTENT_DIR . '/conflict-detective-state.json';
-$early_log = WP_CONTENT_DIR . '/conflict-detective-early-errors.log';
-$mu_loader = WP_CONTENT_DIR . '/mu-plugins/conflict-detective-loader.php';
+foreach ( $options as $option ) {
+    delete_option( $option );
+}
 
-if ( file_exists( $state_file ) ) {
-    @unlink( $state_file );
+$files = array(
+    WP_CONTENT_DIR . '/conflict-detective-state.json',
+    WP_CONTENT_DIR . '/conflict-detective-early-errors.log',
+    WP_CONTENT_DIR . '/conflict-detective-fallback.log',
+    WP_CONTENT_DIR . '/mu-plugins/conflict-detective-loader.php',
+);
+
+foreach ( $files as $file ) {
+    if ( file_exists( $file ) ) {
+        @unlink( $file );
+    }
 }
-if ( file_exists( $early_log ) ) {
-    @unlink( $early_log );
-}
-if ( file_exists( $mu_loader ) ) {
-    @unlink( $mu_loader );
-}
+```
